@@ -1,0 +1,287 @@
+1-- Trabaja para una empresa que explota un criadero artificial de diversas especies de peces en un lago. La empresa desea construir un modelo para predecir los kilos de pescado comercializables en tres instantes de tiempo futuro, a una semana, a un mes y a tres meses. Para ello usará unos datos de muestras extraidas del lago. Las muestras las obtienen usando información disponible sobre la distribución de los bancos de peces en el lago a lo largo de las horas del día y usando los aparejos de pesca que se usan para la explotación comercial del criadero. Analice la situación, haga las hipótesis que considere necesarias y diga que probabilidad hay de que la empresa obtenga los resultados que desea.
+
+-> No es posible, la toma de de muestra con las redes usadas para la comercialización introducen necesariamente un sesgo en los datos en aquellos tamaños que no son capturados por dichas redes. Obviamente los más pequeños son los necesarios para predecir a la larga y estas redes no los capturan.
+
+2-- Consideremos dos transformaciones no lineales de dimensión finita A1 y A2 y sus correspondientes núcleos K1 y K2. Definimos dos nuevas transformaciones como A3(x) = (A1(x), A2(x)) y A4(x) = A1(x) * A2(x)^T.
+a) Expresar los kernels correspondientes a A3 y A4 en términos de K1 y K2.
+b) ¿Qué conclusiones saca respecto de K1 + K2 y K1 * K2?
+
+->
+
+3-- Identifique las ventajas y desventajas del algoritmo SVM-soft, respecto de los otros clasificadores binarios que hemos estudiado: perceptron, regresión logística y redes neuronales. Analice caso separable y caso no separable.
+
+-> La estrecha relación entre el algoritmo SVM-soft y los algoritmos perceptron (p), RL y RRNN se establece con la formulación de SVM-soft como un problema de regularización. En ese contexto, el análisis comparativo se centra en la función de perdida usada por cada uno de ellos, ya que el término de regularización es común a todos ellos (minimizar la norma del vector de pesos).
+
+Caso separable: SVM-soft analiza la solución óptima en términos de menor dimensión de VC, ya que su función de perdida busca el hiperplano solución con máxima anchura entre clases. Las funciones de perdidad de P y RRNN solo buscan una solución separable. Por otro lado RL optimiza una perdida extraída de la optimización de la verosimilitud de la muestra que no implica la solución de mayor separabilidad entre las distribuciones de cada clase.
+
+Caso no separable: SVM-soft nos permite a través de la constante C del término de penalización de errores, elegir un compromiso entre error y generalización. Para cada valor de C la solución de SVM-soft es óptima ya que maximiza la separabilidad entre clases. Los demás algoritmos no disponen de dicho mecanismo de compromiso y por tanto sus soluciones no tienen ninguna garantía de optimalidad o de encontrar una solución aceptable. Sin embargo, RL ha demostrado experimentalmente que en los casos de alto nivel de ruido, la optimización de la verosimilitud de la muestra conduce a soluciones mejor regularizadas que la optimización por separabilidad.
+
+4-- Considere un problema de clasificación. Identifique las condiciones bajo las cuales elegiría usar cada una de las siguientes aproximaciones (a,b,c) para resolverlo. Responda a (d):
+a) El problema primal SVM-hard
+b) El problema dual SVM-hard
+c) El problema dual SVM-hard con uso de kernel
+d) ¿Qué condiciones del problema de clasificiación le harían desistir del uso del algoritmo SVM-hard?
+
+-> a) Problemas con datos muestrales de menor dimensionalidad que el tamaño de la muestra. La optimización es en el espacio de las muestras.
+b) Problemas con datos muestrales de mayor dimensionalidad que el tamaño de la muestra. La optimización es en el espacio de los multiplicadores.
+c) Cuando queremos resolver la optimización en un espacio de alta dimensionalidad sin tener que añadir a mano funciones no lineales de la muestras.
+d) Dada la eficiencia del algoritmo, el número de muestras es el factor más relevante.
+
+5-- Analice las restricciones de KKT del modelo SVM-hard dual y diga si todo punto (xn, yn) verificando yn(wt * xn + b) = 1 es un vector soporte de la solución. Argumente su decisión.
+
+-> La solución del problema SVM-hard establece que los puntos con A* > 0 son los vectores soporte. Pese a ello, la condición KKT solo establece que se verifique a*(yn(wt * xn + b)-1) = 0. Por tanto puede haber puntos no vectores soporte, es decir A* = 0 verificando que se cumple la condición KKT.
+
+6-- Considere el algoritmo Perceptron y la regla de adaptación del mismo, wk+1 = wk + ykxk cuando sign(yk) != sign(wtkxk) y wk+1 = wk en otro caso. Asuma el caso de datos separables. Suponga ahora que modifica dicho algoritmo de la siguiente manera: a) en lugar de ir recorriendo el conjunto de datos para aplicar la regla de adaptación, decide adaptar el valor de w con el vector x del punto peor clasificado para ese hiperplano, es decir, con mayor distancia absoluta al hiperplano; b) el algoritmo itera adaptando el valor de w de forma indefinida hasta que el valor de w no cambia en dos iteraciones consecutivas. Analice la situación y diga
+a) ¿Converge el segundo algoritmo a alguna solución?
+b) En caso afirmativo de convergencia, ¿qué clase de solución obtiene?
+
+-> a) Converge seguro a una solución separable porque el nuevo algoritmo, respecto del perceptron, solo cambia el orden de reexploración de los datos y eso no afecta a la convergencia del perceptron. Una vez el hiperplano es separador el algoritmo va maximizando la distancia de los puntos al hiperplano y por tanto minimizando los puntos relevantes que lo definen.
+b) La solución es la misma que la dada por SVM ya que maximiza el margen.
+
+7-- Cuando se usa early_stopping en el ajuste de una red neuronal es muy posible que obtengamos el mínimo de la validación en una iteración anterior a haber entrenado la red con todos los datos del conjunto de entrenamiento. Analice esta situación y diga:
+a) ¿Está en conflicto esta situación con la propiedad establecida por las curvas de aprendizaje, que nos dice que cuantos más datos usemos para entrenar un modelo mejor modelo se obtiene?
+b) ¿Qué pasaría si entrenamos con todos los datos?
+
+-> a) La curva de aprendizaje nos habla de la conducta del ajuste de un modelo concreto cuando el número de datos crece. No es el caso de early_stopping ya que el modelo cambia en cada iteración, por tanto no está en conflicto, son cosas distintas.
+b) Si una vez alcanzado el mínimo de la validación seguimos entrenando hasta agotar los datos de entrenamiento, estaremos sobreajustando nuestro modelo a los datos. El error de validación estará creciendo mientras que el del ajuste disminuye.
+
+8-- Suponga un problema de predicción (f, H, A, P) bien definido. Suponga que la clase de funciones H es suficiente para hacer que E_in = 0 para cualquier muestra de tamaño N.
+a) Analice las fuentes de error del problema de ajuste de una hipótesis y diga si en esa situación hay presencia de sobreajuste y, como sería la evolución del sobreajuste cuando se va reduciendo la complejidad de la clase H.
+b) Diga en que cambiaría su análisis cuando N el tamaño de la muestra crece o decrece.
+
+-> Los datos siempre están contaminados por error. Por tanto, si la clase de funciones es capaz de hacer E_in = 0 para toda muestra de tamaño N, dicha clase de funciones puede sufrir de un severo sobreajuste al tratar de ajustar errores estocásticos.
+a) Cuando vamos disminuyendo la complejidad de la clase H se produce una paulatina reducción del error estocástico y un aumento del error determinístico en el ajuste, con la disminución de la varianza y un aumento de sesgo de la clase respecto a los datos. En este compromiso de errores gana la disminución por perdida de varianza de la clase de funciones, lo que hará que el sobreajuste disminuya. Este decrecimiento de sobreajuste se mantiene hasta que la variabilidad de la clase entra en compromiso con el tamaño de la muestra, en cuyo caso el error determinístico (sesgo) comenzará a ser mayor que la disminución de variabilidad de la clase de funciones y el sobreajuste comenzará a crecer de nuevo.
+b) Cuando el tamaño de la muestra N crece o decrece el análisis anterior no cambia en nada, ya que no depende de N. Solo depende de N la complejidad de la clase de funciones que alcanza el error mínimo de ajuste. Lo único que podemos decir es que la complejidad de la clase que alcanza el ajuste óptimo es creciente con N.
+
+9-- Indique con precisión que clase de funciones son útiles para resolver problemas de aprendizaje de acuerdo a la teoría de Vapnik Chervonenkis. Justifique con claridad y precisión sus argumentaciones.
+
+-> Todas las clases de funciones con VC finita (criterio ERM). Todas las clases de funciones con dimensión VC infinita, pero que se puede expresar como una jerarquía creciente de clases de dimensión VC finita cada una de ellas (criterio SRM).
+
+10-- Considere la aproximación PAC a un problema de aprendizaje por inducción. Diga,
+a) ¿Es una solución determinística o estocástica? Identifique en cada caso las causas concretas que justifican dicha condición.
+b) ¿Nos proporciona siempre una solución? Justifique de forma precisa su contestación.
+
+-> a) Es una solución estocástica, ya que depende de la muestra usada para su ajuste en cada caso.
+b) No. Cuando el valor de E_in es cercano a cero sí nos proporciona una solución y nos dice que precisión podemos esperar de ella. Cuando E_in es mucho mayor que cero, no nos proporciona ninguna solución. Este sería el caso de usar una clase de funciones que no consiguen ajustar los datos.
+
+11-- Considere que debe seleccionar entre varias clases de funciones, fijadas de antemano, aquellas que permiten un mejor ajuste de un problema de aprendizaje concreto. Para ello disponemos de una muestra de aprendizaje grande (>50000 muestras). El algoritmo de aprendizaje usado es el mismo para todas las clases. Diga,
+a) Qué técnica usaría para determinar que clase de funciones obtiene el mejor ajuste y la justificación teórica que la avala.
+
+-> Bajo las condiciones establecidas, se puede separar, sin menoscabo de precisión, un conjunto de test para estimar el E_out de la solución en términos de E_test. Entonces se ajustan todas las clases de funciones sobre los mismos datos de entrenamiento. Una vez ajustadas las clases, se puede medir el error E_test de la hipótesis ganadora. Aquella hipótesis es la que diferencia entre el error de entrenamiento y el error de test, siendo la más pequeña la que mejor ajustó los datos (menor error global). La justificación es el comportamiento e interpretación de las curvas de aprendizaje.
+
+12-- Identifique en los casos siguientes qué problema de predicción subyace en ellos y, en su caso, describa con precisión el contenido y función de cada uno de los elementos del problema de aprendizaje. Justifique su razonamiento.
+a) Asignar animales a su clase o especia a partir de fotos.
+b) Establecer un diagnóstico de presencia de caries a partir de radiografías bucales.
+c) Establecer perfiles de cliente en una empresa, a partir de los datos de compra diária de los clientes verdaderos.
+
+-> a) No es un problema de predicción desde los datos. Los criterios de clasificación biológica de las especies son conocidos y están bien establecidos por los biólogos, además de usar datos no presentes en las fotos.
+b) Clasificación binaria. X={píxeles}, Y={-1,1}
+c) El enfoque más directo es que se trata de crear agrupaciones de datos de compra a partir de los cuales extraer información de los potenciales perfiles de clientes. El problema es no supervisado porque no hay etiquetas.
+
+13-- Suponga que una empresa le pide resolver un problema de aprendizaje con una clase de funciones con 2000 hipótesis y una muestra de 1000 datos. Su interés, claramente, es encontrar aquella solución con la menor estimación de E_out(g) posible. 
+a) Discuta las opciones que hay para abordar este problema.
+b) Argumente las consecuencias de las distintas opciones sobre la calidad de la solución.
+c) ¿Hay una mejor solución posible?
+
+-> Bajo las hipótesis establecidas caben dos conductas: a) separar un conjunto de test para estimar E_out desde E_test; b) usar todos los datos para entrenar y estimar E_out a partir de E_in.
+Para contestar pues hay que valorar dos desigualdades:
+
+	E_out <= E_in + sqrt(1/N * ln(2*|H| / sigma))
+	E_out <= E_test + sqrt(1/N * ln(2 / sigma))
+
+Asumiendo una probabilidad de sigma=0.1, |H|=2000 y N=1000 tenemos que:
+
+	E_out <= E_in + 0.1
+	E_out <= E_test + 0.0547
+
+El error de generalización con E_in es casi el doble que en el caso de E_test, por tanto si usamos un conjunto de test de tamaño razonable, es esperable que generalice mejor (no tiene que coincidir con el mejor ajuste). 
+
+
+14-- En un recipiente con bolas blancas y negras se conoce la probabilidad de una bola blanca es de 0.7. Dar una cota para la probabilidad de que en una muestra de 10 bolas la frecuencia relativa de bolas blancas en la muestra sea menor o igual a 0.25.
+
+-> Haciendo uso de la desigualdad de Hoeffding P(|mu-nu|>epsilon) < 2*exp{-2*N*epsilon^2}- Para que la pregunta sea contestada hay que tomar algunos valores. Epsilon=0.45, N=10, mu=0.7. Entonces P(|mu-nu|>0.45) = P(nu < 0.25) <= 0.003.
+
+15-- Determinar el punto de ruptura de los subconjuntos de la recta real formada por la unión de k intervalos finitos.
+
+-> Considere el caso de puntos entiquetados en un modelo alternado, .........x,o,x,o,x,o,x......... Si analizamos vemos que para k=1 el punto de ruptura es 3, para k=2 el punto de ruptura es 5, para k=3 el punto de ruptura es 7. Por inducción 2k+1 es el punto de ruptura.
+
+16-- Establezca la relación más potente entre la regla ERM y la solución PAC en un problema de aprendizaje estadístico por inducción. Luego analice la regla SRM de aprendizaje y diga de que forma generaliza a la solución PAC.
+
+-> La regla ERM garantiza una solución PAC al aprendizaje por inducción sobre clases de funciones de dimensión VC finita. La regla SRM debe resolver un problema PAC por cada clase de funciones de la jerarquía. Por tanto los tamaños muestrales mínimos para garantizar la solución PAC en cada clase de la jerarquía no tienen que ser iguales. En consecuencia la solución SRM no es una solución PAC sobre la clase de funciones d_vc=infinito. La generaliza en ese sentido, no hay un N a partir del cual podamos garantizar un error prefijado. El tamaño de N depende de la clase de funciones.
+
+17-- a) Identifique el origen de las fuentes de incertidumbre presentes en la solución PAC de un problema de aprendizaje. Justifique la respuesta.
+b) Cómo afecta la clase de funciones  elegida al error de una solución PAC? Justifique la respuesta.
+
+-> a) La solución PAC tiene dos fuentes de incertidumbre provenientes de las muestras. 
+	1) La primera está asociada al error entre la estimación de la muestra y el verdadero valor en la población, y tiene como origen que el tamaño de la muestra necesariamente siempre es menor que el tamaño de la población.
+	2) La segunda fuente de incertidumbre está asociada a que la muestra se elige de forma aleatoria y por tanto para distintas muestras del mismo tamaño no podemos garantizar el mismo resultado, pero sí una probabilidad sobre el resultado.
+b) En la solución PAC tenemos que minimizar dos errores a la vez: E_in y E_out - E_in. Supongamos un tamaño muestral N fijo y suficiente. En este caso, estos dos errores solo dependen de la clase de funciones. Con clases de funciones de d_vc pequeña, será difícil, en general, hacer que E_in=0, pero si podremo hacer que (E_out - E_in)=0 si N es suficientemente grande- En cambio, si d_vc es grande, será fácil hacer que E_in=0, pero será difícil que (E_out-E_in)=0. El tamaño muestral N fija la complejidad máxima de la clase para un error dado. En consecuencia, la elección de la clase de funciones es clave para obtener una buena solución PAC y la potencia de la misma debe depender del tamaño muestral disponible.
+
+18-- Considere los elementos que definen un problema de aprendizaje por inducción. La dimensión de Vapnik-Chervonenkis (VC) es una propiedad numérica asociada a uno de dichos elementos ¿Qué nos dice dicha propiedad y a qué elemento del aprendizaje se refiere? Detallar la contestación.
+
+-> La dimensión VC es una propiedad de la clase de funciones usada y (en clasificación binaria) nos da el mayor tamaño muestral para el cual la clase de funciones es capaz de explicar completamente todas sus dicotomías. 
+El caso de dimensión-VC finita nos garantiza que la regla ERM es suficiente para lograr una solución PAC al aprendizaje inductivo. En el caso de dimensión-VC infinita, solo se puede garantizar una solución bajo determinadas condiciones sobre la clase de funciones (jerarquia de clases).
+
+19-- ¿Cuando calculamos una solución PAC de un problema de aprendizaje es posible encontrar situaciones en las que se puede decir: 'hemos fallado en encontrar solución'? En caso afirmativo, decir cuando se produce ese evento, bajo que circunstancias se produce y como sabemos que hemos fallado.
+
+-> Sí se puede dar la situación de fallo. La desigualdad P(|E_out - E_in| > epsilon(N,d_vc)) <= sigma(N,d_vc) nos sirve para analizar cuando se produce. Los valores de las constantes epsilon y sigma dependen del tamaño muestral y la clase de funciones. El objetivo es dar una solución con la que haya alguna posibilidad de que el error fuera de la muestra sea cero o esté tan cerca de cero como lo permita la muestra N. Para ello, y de acuerdo a la expresión anterior, debe verificarse que E_in=0 o muy cercano, en caso contrario el E_out no será pequeño en función de epsilon(N,d_vc). En consecuencia si no logramos realizar un ajuste que verifique E_in=0 para una clase de funciones de baja complejidad diremos que hemos fallado.
+
+20-- Probar la siguiente desigualdad de la función de crecimiento: m_h(2N) <= m_h(N)^2. N representa el número de puntos.
+
+-> Consideremos el conjunto de 2N puntos como la unión de dos conjuntos de N puntos cada uno. El máximo número de dicotomías que es posible calcular con 2N puntos, usando la división anterior, sería el producto del máximo número de dicotomías del primer conjunto por el máximo número de dicotomías del segundo conjunto. Como cada conjunto tiene N puntos, el máximo sería m_h(N) x m_h(N) = m_h(N)^2. Se verifica la desigualdad en consecuencia.
+
+21-- a) Defina que se entiende por el compromiso Aproximación-Generalización en un problema de aprendizaje y de que factores depende.
+b) Establezca las semejanzas y diferencias entre el compromiso Aproximación-Generalización de la teoria de VC y el análisis sesgo-varianza de una clase de funciones.
+
+-> a) El compromiso Aproximación-Generalización dentro de la teoría de VC se presenta como consecuencia de tener que fijar la clase de funciones en el problema de aprendizaje PAC. Este compromiso solo depende de la clase de funciones y es independiente del algoritmo usado y de la distribuciñon muestral. Una clase de funciones con alta dimensión VC aproximará los datos de la muestra muy bien, es decir, E_in=0, pero el error de generalización, O(d_vc*N / ln(N)), crece con d_vc para un tamaño de N dado. Por tanto el compromiso se establece al tener que fijar la clase de funciones sin saber a priori cuanto de bien ajustará la muestra.
+b) El compromiso Sesgo-Varianza analiza el error E_out de una solución a través de dos términos: a) el sesgo, que mide la distancia del promedio de la clase a la verdadera función, y b) varianza, que mide la variabilidad de la solución frente al promedio de la clase. Este análisis depende de la clase de funciones y del algoritmo usado para elegir la solución. Ambos compromisos AG y SV representan formas distintas de analizar el ajuste en un problema de aprendizaje. El compromiso AG es calculable y aporta una cota de E_out, pero SV solo aporta un mecanismo de an
+análisis de la situación.
+
+22-- Asuma que la dimensión de Vapnik-Chervoneskis (VC) de los hiperplanos de R^n es n+1. Demuestre cual es la dimensión VC de la familia de conjuntos definida por todos los círculos del plano de radio finito. Es decir, los conjuntos de la forma: {(x1,x2) € R^2: (x1-a)^2 + (x2-b)^2 <= r} donde (a,b) € R^2 y r > 0.
+
+-> De acuerdo a lo estudiado en variables ampliadas, la transformación de las variables (x1,x2) = x1^2, x2^2, x1, x2, 1 describe todos los círculos a partir de los hiperplanos del espacio R^5, de acuerdo entonces a la hipótesis preestablecida, la d_vc=6.
+
+23-- Analice los clasificadores basados en un conjunto de árboles y diga:
+a) ¿Son clasificadores PAC? En caso negativo, ¿qué garantías teóricas avalan el funcionamiento de dichos clasificadores?
+b) Analice la influencia en términos de sesgo y varianza del número de árboles del conjunto en el resultado del clasificador.
+
+-> a) El árbol como clasificador tiene dimensión VC infinita, luego no son clasificadores PAC. El criterio MDL permite establecer el error de generalización del árbol a partir del número de nodos, el tamaño muestral y la dimensión del espacio de características.
+b) En el caso de un conjunto de árboles el análisis de garantías se basa en el compromiso sesgo-varianza. Cada árbol del conjunto desarrollado hasta el final tiene sesgo igual a cero, pero alta varianza individual y alta correlación entre sus miembros cuando se ha usado la misma muestra para su construcción. La selección de distintos conjuntos de variables para la construcción de cada árbol disminuye drásticamente la correlación entre lo árboles y permite que el promedio de las predicciones sea un estimador de bajo sesgo y varianza. En RF el objetivo es usar conjuntos con tantos árboles no-correlacionados como podamos, es decir sin dependencias entre ellos pero con el sesgo más pequeño posible. Por tanto, el número de árboles útiles en un conjunto estará esencialmente influenciado por el número de características usadas para construir cada uno de ellos. A mayor número de características menos sesgo de cada árbol pero mayor correlación entre ellos. Equivalentemente a menor número de características usadas menor correlación en el conjunto pero mayor sesgo individual.
+
+24-- La formulación probabilística de un problema de aprendizaje junto con el criterio de Máxima verosimilitud para la estimación de los parámetros del modelo representa una de la aproximaciones más sólidas en ciencia. Sin embargo la aproximación desarrollada por Vapnik and Chernovenkis está basada en el ajuste de clase de funciones. ¿Existe alguna conexión entre ambas aproximaciones? En caso afirmativo diga cuál, y muestre algún ejemplo de como se establece.
+
+-> El criterio ERM de la teoría de VC se basa en minimizar una función de perdida sobre una muestra de datos. El criterio de Máxima Verosimilitud se basa en maximizar la probabilidad P de la muestra, que se supone independiente e idénticamente distribuida. La conexión entre ambos problemas se establece en el momento que convertimos el problema de maximización en un problema de minimización tomando logaritmo de de la probabilidad de la muestra y cambiando el signo. la nueva función toma valores entre 0 e infinito con el mínimo en 0, por tanto -ln(P) se puede considerar una función de perdida legítima a usar con la teoría de VC.
+
+24-- Identificar de forma precisa dos condiciones imprescindibles para
+que un problema de predicción puede ser aproximado por induc-
+ción desde una muestra de datos. Justificar la respuesta usando
+los resultados teóricos estudiados.
+
+-> Estas dos condiciones son:
+- Los datos deben ser muestras independientes e idénticamente dis-
+tribuidas (iid) en una distribución con probabilidad P, ya que si esto no
+ocurriese el error en los datos test en las regiones donde no se ha aprendido
+pueden devolver errores mayores y dicho problema pasaría a un problema
+de aprendizaje sobre una región determinada de f .
+- Por otro lado, el término M perteneciente a la desigualdad de
+Hoeffding, mediante los resultados obtenidos al aplicarlo sobre el SRM
+define que la dimensión de Vapnik-Chervonenkis de la clase de hipótesis
+seleccionada debe ser finita, en caso contrario, solo podemos afirmar que
+la probabilidad de que la diferencia dentro y fuera de la muestra sea menor
+que δ sería menor o igual a ∞.
+
+25-- Considere la cota para la probabilidad de la hipótesis solución
+g de un problema de aprendizaje, a partir de la desigualdad
+generalizada de Hoeffding para una clase finita de hipótesis,
+P [|Eout(g) − Ein(g)| > epsilon) < sigma
+a) ¿Cuál es el algoritmo de aprendizaje que se usa para elegir
+g?
+b) Si elegimos g de forma aleatoria ¿seguiría verificando la de-
+sigualdad?
+c) ¿Depende g del algoritmo usado?
+d) ¿Es una cota ajustada o una cota laxa?
+
+
+-> a) El algoritmo que consiga minimizar de forma más óptima el error en
+las clases de hipótesis H.
+b) Si, pero al ser escogido de forma aleatoria, no podemos verificar que
+sea el que obtiene el mínimo error posible.
+c) Como viene especificado en las transparencias de teoría g depende
+de D por lo que el algoritmo usado no afecta a g.
+d) Es una cota laxa.
+
+26-- Considere que le dan una muestra de tamaño N de datos eti-
+quetados -1, +1 y le piden que encuentre la función que mejor
+ajuste dichos datos. Dado que desconoce la verdadera función f ,
+discuta los pros y contras de aplicar los principios de inducción
+ERM y SRM para lograr el objetivo. Valore las consecuencias
+de aplicar cada uno de ellos.
+
+
+-> Si aplicamos el principio de inducción ERM, se obtiene un conjunto
+pesos a partir de la minimización del error, en función de la clasificación
+de cada dato con respecto a las etiquetas. Para dicha clasificación debemos
+comprobar si la etiqueta es correcta o no, etiquetamos los datos en función
+a una recta, asignamos las etiquetas -1 y +1 dependiendo si el punto se
+encuentra por encima o por debajo de la recta respectivamente. En cada
+clasificación de un dato modificamos el conjunto de pesos. Cuando tenemos
+el conjunto de pesos final, podemos obtener el hiperplano del conjunto de
+datos.
+El principio de inducción ERM es ventajoso sobre grandes conjuntos
+de datos, en cambio, si el conjunto de entrenamiento es pequeño respecto a
+la dimensión, no podemos asegurar que mediante ERM se pueda aprender
+sobre dicho conjunto de datos.
+SRM nos permite aproximar el error a un conjunto H y disminuir la
+dimensión VC. SRM permite movernos por diferentes clases de funciones
+delimitadas por su dimensión de Vapnik-chervonenkis, por medio de estas
+podemos encontrar la mejor función que obtenga el menor error.
+
+
+27-- ¿Cuál es el criterio de optimalidad en la construcción de un
+árbol? Analice un clasificador en árbol en términos de sesgo y
+varianza. ¿Que estrategia de mejora propondría?
+
+-> El principal criterio de optimalidad de un árbol es la búsqueda de mo-
+delos simples, es decir, árbol este compuesto por modelos los cuales no
+tengan una complejidad alta, de forma que consigamos optimizar de ma-
+nera compensada entre la complejidad simple del modelo y la precisión
+del modelo sobre los datos de entrenamiento. Los árboles de decisión se
+caracterizan por tener un bajo sesgo, ya que sugieren pequeños cambios en
+la estimación de la función objetivo con cambios en el conjunto de datos,
+por otro lado los árboles de decisión tienen una alta varianza por lo que
+estos necesitan grandes cambios en la estimación de la función objetivo.
+Como sabemos el objetivo de cualquier algoritmo de Machine Learning
+es lograr un sesgo alto y una baja varianza por lo que propondría una
+compensación Bias-Varianza o Trade-Off, esto se basa en conseguir una
+mayor precisión de predicción frente a tener una gran consistencia de los
+modelos de entrenamiento
+
+
+28-- El método de Boosting representa una forma alternativa en la
+búsqueda del mejor clasificador respecto del enfoque tradicional
+implementado por los algoritmos: PLA, SVM, NN, etc.
+a) Identifique de forma clara y concisa las novedades del enfo-
+que
+b) Diga las razones profundas por las que la técnica funciona
+produciendo buenos ajustes (no ponga el algoritmo)
+c) Identifique sus principales debilidades
+d) ¿Cuál es su capacidad de generalización comparado con SVM?
+
+-> a) Boosting se centra en construir un único clasificador fuerte como adición
+de múltiples clasificadores débiles, el conjunto de datos original cambia en
+cada iteración. Boosting construye un clasificador de forma secuencial a
+partir de todas las muestras generadas del conjunto original, estos conjun-
+tos se eligen de forma aleatoria permitiendo disminuir el sesgo.
+b) Boosting es una técnica que consiste en ajustar secuencialmente múl-
+tiples clasificadores de manera adaptativa, cada modelo ajusta dotando
+una mayor importancia a las observaciones del conjunto de datos de la se-
+cuencia anterior que el modelo no clasificó de forma correcta. Cada nuevo
+modelo obtenido enfoca sus esfuerzos en las observaciones mas difíciles de
+ajustar hasta el momento, por lo que al final del proceso obtendremos un
+clasificador robusto y sólido, con un sesgo bajo.
+c)Unos de las principales debilidades de este método es la aparición de so-
+breajuste cuando los clasificadores débiles son demasiados complejos, esto
+ocurre por la varianza que presentan estos clasificadores.
+d) La generalización mediante el método boosting aumenta cuando la
+complejidad de los clasificadores aumenta, en cambio la generalización en
+SVM aumenta cuando mayor es el número de vectores soporte.
+
+
+29-- Identifique que pasos daría y en que orden para conseguir el me-
+nor esfuerzo posible un buen modelo de red neuronal a partir de
+una muestra de datos. Justifique los pasos propuestos, el orden
+de los mismos y argumente que son adecuados para conseguir un
+buen óptimo. Considere que tiene suficientes datos tanto para el
+ajuste como para el test.
+
+-> 1- Preprocesamos los datos de entrada, reduciendo la dimensionalidad y
+disminuyendo la complejidad de los datos, esto permitirá un aprendizaje
+mas acertado y fácil sobre los datos.
+2- Elegimos el modelo de clasificación, debemos elegir un modelo de acuer-
+do al conjunto de datos que poseemos el cual represente de forma adecuada
+el conjunto de datos.
+3- Inicializacion del vector de pesos. Este paso es uno de los mas impor-
+tantes en la construcción de una red neuronal. La forma más eficiente sería
+iniciar el vector a valores próximos a 0.
+4- Determinar el número de capas que compondran nuestra red neuronal.
+5- Definir una condición de parada óptima.
